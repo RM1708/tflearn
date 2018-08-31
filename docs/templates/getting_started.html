@@ -1,0 +1,417 @@
+<h1>Getting started with TFLearn</h1>
+<p>Here is a basic guide that introduces TFLearn and its functionalities. First, highlighting TFLearn high-level API for fast neural network building and training, and then showing how TFLearn layers, built-in ops and helpers can directly benefit any model implementation with Tensorflow.</p>
+<h1>High-Level API usage</h1>
+<p>TFLearn introduces a High-Level API that makes neural network building and training fast and easy. This API is intuitive and fully compatible with Tensorflow.</p>
+<h3>Layers</h3>
+<p>Layers are a core feature of TFLearn. While completely defining a model using Tensorflow ops can be time consuming and repetitive, TFLearn brings "layers" that represent an abstract set of operations to make building neural networks more convenient. For example, a convolutional layer will:</p>
+<ul>
+<li>Create and initialize weights and biases variables</li>
+<li>Apply convolution over incoming tensor</li>
+<li>Add an activation function after the convolution</li>
+<li>Etc...</li>
+</ul>
+<p>In Tensorflow, writing these kinds of operations can be quite tedious:</p>
+<pre><code>    with tf.name_scope('conv1'):
+        W = tf.Variable(tf.random_normal([5, 5, 1, 32]), dtype=tf.float32, name='Weights')
+        b = tf.Variable(tf.random_normal([32]), dtype=tf.float32, name='biases')
+        x = tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+        x = tf.add_bias(x, b)
+        x = tf.nn.relu(x)
+</code></pre>
+<p>While in TFLearn, it only takes a line:</p>
+<pre><code>    ```python
+    tflearn.conv_2d(x, 32, 5, activation='relu', name='conv1')
+    ```
+</code></pre>
+<p>Here is a list of all currently available layers:</p>
+<p>File | Layers
+-----|-------
+<a href="http://tflearn.org/layers/core/">core</a> | input_data, fully_connected, dropout, custom_layer, reshape, flatten, activation, single_unit, highway, one_hot_encoding, time_distributed
+<a href="http://tflearn.org/layers/conv/">conv</a> | conv_2d, conv_2d_transpose, max_pool_2d, avg_pool_2d, upsample_2d, conv_1d, max_pool_1d, avg_pool_1d, residual_block, residual_bottleneck, conv_3d, max_pool_3d, avg_pool_3d, highway_conv_1d, highway_conv_2d, global_avg_pool, global_max_pool
+<a href="http://tflearn.org/layers/recurrent/">recurrent</a> | simple_rnn, lstm, gru, bidirectionnal_rnn, dynamic_rnn
+<a href="http://tflearn.org/layers/embedding_ops/">embedding</a> | embedding
+<a href="http://tflearn.org/layers/normalization/">normalization</a> | batch_normalization, local_response_normalization, l2_normalize
+<a href="http://tflearn.org/layers/merge_ops/">merge</a> | merge, merge_outputs
+<a href="http://tflearn.org/layers/estimator/">estimator</a> | regression</p>
+<h3>Built-in Operations</h3>
+<p>Besides layers concept, TFLearn also provides many different ops to be used when building a neural network. These ops are firstly meant to be part of the above 'layers' arguments, but they can also be used independently in any other Tensorflow graph for convenience. In practice, just providing the op name as argument is enough (such as activation='relu' or regularizer='L2' for conv_2d), but a function can also be provided for further customization.</p>
+<p>File | Ops
+-----|----
+<a href="http://tflearn.org/activations">activations</a> | linear, tanh, sigmoid, softmax, softplus, softsign, relu, relu6, leaky_relu, prelu, elu
+<a href="http://tflearn.org/objectives">objectives</a> | softmax_categorical_crossentropy, categorical_crossentropy, binary_crossentropy, mean_square, hinge_loss, roc_auc_score, weak_cross_entropy_2d
+<a href="http://tflearn.org/optimizers">optimizers</a> | SGD, RMSProp, Adam, Momentum, AdaGrad, Ftrl, AdaDelta
+<a href="http://tflearn.org/metrics">metrics</a> | Accuracy, Top_k, R2
+<a href="http://tflearn.org/initializations">initializations</a> | zeros, uniform, uniform_scaling, normal, truncated_normal, xavier, variance_scaling
+<a href="http://tflearn.org/losses">losses</a> | l1, l2</p>
+<p>Below are some quick examples:</p>
+<p>```python</p>
+<h1>Activation and Regularization inside a layer:</h1>
+<p>fc2 = tflearn.fully_connected(fc1, 32, activation='tanh', regularizer='L2')</p>
+<h1>Equivalent to:</h1>
+<p>fc2 = tflearn.fully_connected(fc1, 32)
+tflearn.add_weights_regularization(fc2, loss='L2')
+fc2 = tflearn.tanh(fc2)</p>
+<h1>Optimizer, Objective and Metric:</h1>
+<p>reg = tflearn.regression(fc4, optimizer='rmsprop', metric='accuracy', loss='categorical_crossentropy')</p>
+<h1>Ops can also be defined outside, for deeper customization:</h1>
+<p>momentum = tflearn.optimizers.Momentum(learning_rate=0.1, weight_decay=0.96, decay_step=200)
+top5 = tflearn.metrics.Top_k(k=5)
+reg = tflearn.regression(fc4, optimizer=momentum, metric=top5, loss='categorical_crossentropy')
+```</p>
+<h3>Training, Evaluating &amp; Predicting</h3>
+<p>Training functions are another core feature of TFLearn. In Tensorflow, there are no pre-built API to train a network, so TFLearn integrates a set of functions that can easily handle any neural network training, whatever the number of inputs, outputs and optimizers.</p>
+<p>While using TFlearn layers, many parameters are already self managed, so it is very easy to train a model, using <code>DNN</code> model class:</p>
+<p>```python
+network = ... (some layers) ...
+network = regression(network, optimizer='sgd', loss='categorical_crossentropy')</p>
+<p>model = DNN(network)
+model.fit(X, Y)
+```</p>
+<p>It can also directly be called for prediction, or evaluation:</p>
+<p>```python
+network = ...</p>
+<p>model = DNN(network)
+model.load('model.tflearn')
+model.predict(X)
+```</p>
+<ul>
+<li>To learn more about these wrappers, see: <a href="http://tflearn.org/models/dnn">dnn</a> and <a href="http://tflearn.org/layers/estimator">estimator</a>.</li>
+</ul>
+<h3>Visualization</h3>
+<p>While writing a Tensorflow model and adding tensorboard summaries isn't very practical, TFLearn has the ability to self managed a lot of useful logs. Currently, TFLearn supports a verbose level to automatically manage summaries:</p>
+<ul>
+<li>0: Loss &amp; Metric (Best speed).</li>
+<li>1: Loss, Metric &amp; Gradients.</li>
+<li>2: Loss, Metric, Gradients &amp; Weights.</li>
+<li>3: Loss, Metric, Gradients, Weights, Activations &amp; Sparsity (Best Visualization).</li>
+</ul>
+<p>Using <code>DNN</code> model class, it just requires to specify the verbose argument:
+<code>python
+model = DNN(network, tensorboard_verbose=3)</code></p>
+<p>Then, Tensorboard can be run to visualize network and performance:</p>
+<p><code>$ tensorboard --logdir='/tmp/tflearn_logs'</code></p>
+<p><strong>Graph</strong></p>
+<p><img alt="Graph Visualization" src="./img/graph.png" /></p>
+<p><strong>Loss &amp; Accuracy (multiple runs)</strong></p>
+<p><img alt="Layer Visualization" src="./img/loss_acc.png" /></p>
+<p><strong>Layers</strong></p>
+<p><img alt="Multiple Loss Visualization" src="./img/layer_visualization.png" /></p>
+<h3>Weights persistence</h3>
+<p>To save or restore a model, simply invoke 'save' or 'load' method of <code>DNN</code> model class.</p>
+<p>```python</p>
+<h1>Save a model</h1>
+<p>model.save('my_model.tflearn')</p>
+<h1>Load a model</h1>
+<p>model.load('my_model.tflearn')
+```</p>
+<p>Retrieving a layer variables can either be done using the layer name, or directly by using 'W' or 'b' attributes that are supercharged to the layer's returned Tensor.
+```python</p>
+<h1>Let's create a layer</h1>
+<p>fc1 = fully_connected(input_layer, 64, name="fc_layer_1")</p>
+<h1>Using Tensor attributes (Layer will supercharge the returned Tensor with weights attributes)</h1>
+<p>fc1_weights_var = fc1.W
+fc1_biases_var = fc1.b</p>
+<h1>Using Tensor name</h1>
+<p>fc1_vars = tflearn.get_layer_variables_by_name("fc_layer_1")
+fc1_weights_var = fc1_vars[0]
+fc1_biases_var = fc1_vars[1]
+```</p>
+<p>To get or set the value of these variables, TFLearn models class implement <code>get_weights</code> and <code>set_weights</code> methods:</p>
+<pre><code>    ```python
+    input_data = tflearn.input_data(shape=[None, 784])
+    fc1 = tflearn.fully_connected(input_data, 64)
+    fc2 = tflearn.fully_connected(fc1, 10, activation='softmax')
+    net = tflearn.regression(fc2)
+    model = DNN(net)
+    # Get weights values of fc2
+    model.get_weights(fc2.W)
+    # Assign new random weights to fc2
+    model.set_weights(fc2.W, numpy.random.rand(64, 10))
+    ```
+</code></pre>
+<p>Note that you can also directly use TensorFlow <code>eval</code> or <code>assign</code> ops to get or set the value of these variables.</p>
+<ul>
+<li>For an example, see: <a href="https://github.com/tflearn/tflearn/blob/master/examples/basics/weights_persistence.py">weights_persistence.py</a>.</li>
+</ul>
+<h3>Fine-tuning</h3>
+<p>Fine-tune a pre-trained model on a new task might be useful in many cases. So, when defining a model in TFLearn, you can specify which layer's weights you want to be restored or not (when loading pre-trained model). This can be handle with the 'restore' argument of layer functions (only available for layers with weights).</p>
+<p>```python</p>
+<h1>Weights will be restored by default.</h1>
+<p>fc_layer = tflearn.fully_connected(input_layer, 32)</p>
+<h1>Weights will not be restored, if specified so.</h1>
+<p>fc_layer = tflearn.fully_connected(input_layer, 32, restore='False')
+```</p>
+<p>All weights that doesn't need to be restored will be added to tf.GraphKeys.EXCL_RESTORE_VARS collection, and when loading a pre-trained model, these variables restoration will simply be ignored.
+The following example shows how to fine-tune a network on a new task by restoring all weights except the last fully connected layer, and then train the new model on a new dataset:</p>
+<ul>
+<li>Fine-tuning example: <a href="https://github.com/tflearn/tflearn/blob/master/examples/basics/finetuning.py">finetuning.py</a>.</li>
+</ul>
+<h3>Data management</h3>
+<p>TFLearn supports numpy array data. Additionally, it also supports HDF5 for handling large datasets. HDF5 is a data model, library, and file format for storing and managing data. It supports an unlimited variety of datatypes, and is designed for flexible and efficient I/O and for high volume and complex data (<a href="https://www.hdfgroup.org/HDF5/">more info</a>). TFLearn can directly use HDF5 formatted data:</p>
+<pre><code>    ```python
+    # Load hdf5 dataset
+    h5f = h5py.File('data.h5', 'r')
+    X, Y = h5f['MyLargeData']
+
+    ... define network ...
+
+    # Use HDF5 data model to train model
+    model = DNN(network)
+    model.fit(X, Y)
+    ```
+</code></pre>
+<p>For an example, see: <a href="https://github.com/tflearn/tflearn/blob/master/examples/basics/use_hdf5.py">hdf5.py</a>.</p>
+<h3>Data Preprocessing and Data Augmentation</h3>
+<p>It is common to perform data pre-processing and data augmentation while training a model, so TFLearn provides wrappers to easily handle it. Note also that TFLearn data stream is designed with computing pipelines in order to speed-up training (by pre-processing data on CPU while GPU is performing model training).</p>
+<pre><code>    ```python
+    # Real-time image preprocessing
+    img_prep = tflearn.ImagePreprocessing()
+    # Zero Center (With mean computed over the whole dataset)
+    img_prep.add_featurewise_zero_center()
+    # STD Normalization (With std computed over the whole dataset)
+    img_prep.add_featurewise_stdnorm()
+
+    # Real-time data augmentation
+    img_aug = tflearn.ImageAugmentation()
+    # Random flip an image
+    img_aug.add_random_flip_leftright()
+
+    # Add these methods into an 'input_data' layer
+    network = input_data(shape=[None, 32, 32, 3],
+                         data_preprocessing=img_prep,
+                         data_augmentation=img_aug)
+    ```
+</code></pre>
+<p>For more details, see <a href="http://tflearn.org/data_preprocessing">Data Preprocessing</a> and <a href="http://tflearn.org/data_augmentation">Data Augmentation</a>.</p>
+<h3>Scopes &amp; Weights sharing</h3>
+<p>All layers are built over 'variable_op_scope', that makes it easy to share variables among multiple layers and make TFLearn suitable for distributed training. All layers with inner variables support a 'scope' argument to place variables under; layers with same scope name will then share the same weights.</p>
+<pre><code>    ```python
+    # Define a model builder
+    def my_model(x):
+        x = tflearn.fully_connected(x, 32, scope='fc1')
+        x = tflearn.fully_connected(x, 32, scope='fc2')
+        x = tflearn.fully_connected(x, 2, scope='out')
+
+    # 2 different computation graphs but sharing the same weights
+    with tf.device('/gpu:0'):
+        # Force all Variables to reside on the CPU.
+        with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
+            model1 = my_model(placeholder_X)
+    # Reuse Variables for the next model
+    tf.get_variable_scope().reuse_variables()
+    with tf.device('/gpu:1'):
+        with tf.arg_scope([tflearn.variables.variable], device='/cpu:0'):
+            model2 = my_model(placeholder_X)
+
+    # Model can now be trained by multiple GPUs (see gradient averaging)
+    ...
+    ```
+</code></pre>
+<h3>Graph Initialization</h3>
+<p>It might be useful to limit resources, or assign more or less GPU RAM memory while training. To do so, a graph initializer can be used to configure a graph before run:</p>
+<pre><code>    ```python
+    tflearn.init_graph(set_seed=8888, num_cores=16, gpu_memory_fraction=0.5)
+    ```
+</code></pre>
+<ul>
+<li>See: <a href="http://tflearn.org/config">config</a>.</li>
+</ul>
+<h1>Extending Tensorflow</h1>
+<p>TFLearn is a very flexible library designed to let you use any of its component independently. A model can be succinctly built using any combination of Tensorflow operations and TFLearn built-in layers and operations. The following instructions will show you the basics for extending Tensorflow with TFLearn.</p>
+<h3>Layers</h3>
+<p>Any layer can be used with any other Tensor from Tensorflow, this means that you can directly use TFLearn wrappers into your own Tensorflow graph.</p>
+<pre><code>    ```python
+    # Some operations using Tensorflow.
+    X = tf.placeholder(shape=(None, 784), dtype=tf.float32)
+    net = tf.reshape(X, [-1, 28, 28, 1])
+
+    # Using TFLearn convolution layer.
+    net = tflearn.conv_2d(net, 32, 3, activation='relu')
+
+    # Using Tensorflow's max pooling op.
+    net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+
+    ...
+    ```
+</code></pre>
+<ul>
+<li>For an example, see: <a href="https://github.com/tflearn/tflearn/blob/master/examples/extending_tensorflow/layers.py">layers.py</a>.</li>
+</ul>
+<h3>Built-in Operations</h3>
+<p>TFLearn built-in ops make Tensorflow graphs writing faster and more readable. So, similar to layers, built-in ops are fully compatible with any TensorFlow expression. The following code example shows how to use them along with pure Tensorflow API.</p>
+<ul>
+<li>See: <a href="https://github.com/tflearn/tflearn/blob/master/examples/extending_tensorflow/builtin_ops.py">builtin_ops.py</a>.</li>
+</ul>
+<p>Here is a list of available ops, click on the file for more details:</p>
+<p>File | Ops
+-----|----
+<a href="http://tflearn.org/activations">activations</a> | linear, tanh, sigmoid, softmax, softplus, softsign, relu, relu6, leaky_relu, prelu, elu
+<a href="http://tflearn.org/objectives">objectives</a> | softmax_categorical_crossentropy, categorical_crossentropy, binary_crossentropy, mean_square, hinge_loss, roc_auc_score, weak_cross_entropy_2d
+<a href="http://tflearn.org/optimizers">optimizers</a> | SGD, RMSProp, Adam, Momentum, AdaGrad, Ftrl, AdaDelta
+<a href="http://tflearn.org/metrics">metrics</a> | Accuracy, Top_k, R2
+<a href="http://tflearn.org/initializations">initializations</a> | zeros, uniform, uniform_scaling, normal, truncated_normal, xavier, variance_scaling
+<a href="http://tflearn.org/losses">losses</a> | l1, l2</p>
+<p>Note:
+- Optimizers are designed as class and not function, for usage outside of TFlearn models, check: <a href="http://tflearn.org/optimizers">optimizers</a>.</p>
+<h3>Trainer / Evaluator / Predictor</h3>
+<p>If you are using you own Tensorflow model, TFLearn also provides some 'helpers' functions that can train any Tensorflow graph. It is suitable to make training more convenient, by introducing realtime monitoring, batch sampling, moving averages, tensorboard logs, data feeding, etc... It supports any number of inputs, outputs and optimization ops.</p>
+<p>TFLearn implements a <code>TrainOp</code> class to represent an optimization process (i.e. backprop). It is defined as follow:</p>
+<pre><code>    ```python
+    trainop = TrainOp(net=my_network, loss=loss, metric=accuracy)
+    ```
+</code></pre>
+<p>Then, all TrainOp can be fed into a <code>Trainer</code> class, that will handle the whole training process, considering all TrainOp together as a whole model.</p>
+<pre><code>    ```python
+    model = Trainer(trainops=trainop, tensorboard_dir='/tmp/tflearn')
+    model.fit(feed_dict={input_placeholder: X, target_placeholder: Y})
+    ```
+</code></pre>
+<p>While most models will only have a single optimization process, it can be useful for more complex models to handle multiple ones.</p>
+<pre><code>    ```python
+    model = Trainer(trainops=[trainop1, trainop2])
+    model.fit(feed_dict=[{in1: X1, label1: Y1}, {in2: X2, in3: X3, label2: Y2}])
+    ```
+</code></pre>
+<ul>
+<li>
+<p>To learn more about TrainOp and Trainer, see: <a href="http://tflearn.org/helpers/trainer">trainer</a>.</p>
+</li>
+<li>
+<p>For an example, see: <a href="https://github.com/tflearn/tflearn/blob/master/examples/extending_tensorflow/trainer.py">trainer.py</a>.</p>
+</li>
+</ul>
+<p>For prediction, TFLearn implements a <code>Evaluator</code> class that is working in a similar way as <code>Trainer</code>. It takes any network as parameter and return the predicted value.</p>
+<pre><code>    ```python
+    model = Evaluator(network)
+    model.predict(feed_dict={input_placeholder: X})
+    ```
+</code></pre>
+<ul>
+<li>To learn more about Evaluator class: <a href="http://tflearn.org/helpers/evaluator">evaluator</a>.</li>
+</ul>
+<p>To handle networks that have layer with different behavior at training and testing time (such as dropout and batch normalization), <code>Trainer</code> class uses a boolean variable ('is_training'), that specifies if the network is used for training or testing/predicting. This variable is stored under tf.GraphKeys.IS_TRAINING collection, as its first (and only) element.
+So, when defining such layers, this variable should be used as the op condition:</p>
+<pre><code>    ```python
+    # Example for Dropout:
+    x = ...
+
+    def apply_dropout(): # Function to apply when training mode ON.
+      return tf.nn.dropout(x, keep_prob)
+
+    is_training = tflearn.get_training_mode() # Retrieve is_training variable.
+    tf.cond(is_training, apply_dropout, lambda: x) # Only apply dropout at training time.
+    ```
+</code></pre>
+<p>To make it easy, TFLearn implements functions to retrieve that variable or change its value:</p>
+<pre><code>    ```python
+    # Set training mode ON (set is_training var to True)
+    tflearn.is_training(True)
+    # Set training mode OFF (set is_training var to False)
+    tflearn.is_training(False)
+    ```
+</code></pre>
+<ul>
+<li>See: <a href="http://tflearn.org/config#is_training">training config</a>.</li>
+</ul>
+<h3>Training Callbacks</h3>
+<p>During the training cycle, TFLearn gives you the possibility to track and interact with the metrics of the training throughout a set of functions given by the <a href="https://github.com/tflearn/tflearn/blob/master/tflearn/callbacks.py#L10">Callback</a> interface.
+To simplify the metrics retrieval, each callback method received a <a href="https://github.com/tflearn/tflearn/blob/master/tflearn/helpers/trainer.py#L976">TrainingState</a> which track the state (e.g. : current epoch, step, batch iteration) and metrics (e.g. : current validation accuracy, global accuracy etc..)</p>
+<p>Callback methods which relate to the training cycle : 
+- <code>on_train_begin(training_state)</code>
+- <code>on_epoch_begin(training_state)</code>
+- <code>on_batch_begin(training_state)</code>
+- <code>on_sub_batch_begin(training_state)</code>
+- <code>on_sub_batch_end(training_state, train_index)</code>
+- <code>on_batch_end(training_state, snapshot)</code>
+- <code>on_epoch_end(training_state)</code>
+- <code>on_train_end(training_state)</code></p>
+<h4>How to use it:</h4>
+<p>Imagine you have your own monitor which track all your training jobs and you need to send metrics to it. You can easily do this by creating a custom callback which will get data and send it to the distant monitor.
+We need to create a CustomCallback and add your logic in the <code>on_epoch_end</code> which is called at the end of an epoch.</p>
+<p>This will give you something like that:
+        ```python
+        class MonitorCallback(tflearn.callbacks.Callback):
+            def <strong>init</strong>(self, api):
+                self.my_monitor_api = api</p>
+<pre><code>        def on_epoch_end(self, training_state):
+            self.my_monitor_api.send({
+                accuracy: training_state.global_acc,
+                loss: training_state.global_loss,
+            })
+
+    ```
+</code></pre>
+<p>Then you just need to add it on the <code>model.fit</code> call</p>
+<pre><code>    ```python
+
+
+    monitorCallback = MonitorCallback(api) # "api" is your API class
+    model = ...
+
+    model.fit(..., callbacks=monitorCallback)
+
+    ```
+</code></pre>
+<p>The <code>callbacks</code> argument can take a <code>Callback</code> or a <code>list</code> of callbacks.
+That's it, your custom callback will be automatically called at each epoch end.</p>
+<h3>Variables</h3>
+<p>TFLearn defines a set of functions for users to quickly define variables.</p>
+<p>While in Tensorflow, variable creation requires predefined value or initializer, as well as an explicit device placement, TFLearn simplifies variable definition:</p>
+<pre><code>    ```python
+    import tflearn.variables as vs
+    my_var = vs.variable('W',
+                         shape=[784, 128],
+                         initializer='truncated_normal',
+                         regularizer='L2',
+                         device='/gpu:0')
+    ```
+</code></pre>
+<ul>
+<li>For an example, see: <a href="https://github.com/tflearn/tflearn/blob/master/examples/extending_tensorflow/variables.py">variables.py</a>.</li>
+</ul>
+<h3>Summaries</h3>
+<p>When using <code>Trainer</code> class, it is also very easy to manage summaries. It just additionally required that the activations to monitor are stored into <code>tf.GraphKeys.ACTIVATIONS</code> collection.</p>
+<p>Then, simply specify a verbose level to control visualization depth:</p>
+<pre><code>    ```python
+    model = Trainer(network, loss=loss, metric=acc, tensorboard_verbose=3)
+    ```
+</code></pre>
+<p>Beside <code>Trainer</code> self-managed summaries option, you can also directly use TFLearn ops to quickly add summaries to your current Tensorflow graph.</p>
+<pre><code>    ```python
+    import tflearn.helpers.summarizer as s
+    s.summarize_variables(train_vars=[...]) # Summarize all given variables' weights (All trainable variables if None).
+    s.summarize_activations(activations=[...]) # Summarize all given activations
+    s.summarize_gradients(grads=[...]) # Summarize all given variables' gradient (All trainable variables if None).
+    s.summarize(value, type) # Summarize anything.
+    ```
+</code></pre>
+<p>Every function above accepts a collection as parameter, and will return a merged summary over that collection (Default name: 'tflearn_summ'). So you just need to run the last summarizer to get the whole summary ops collection, already merged.</p>
+<pre><code>    ```python
+    s.summarize_variables(collection='my_summaries')
+    s.Summarize_gradients(collection='my_summaries')
+    summary_op = s.summarize_activations(collection='my_summaries')
+    # summary_op is a the merged op of previously define weights, gradients and activations summary ops.
+    ```
+</code></pre>
+<ul>
+<li>For an example, see: <a href="https://github.com/tflearn/tflearn/blob/master/examples/extending_tensorflow/summaries.py">summaries.py</a>.</li>
+</ul>
+<h3>Regularizers</h3>
+<p>Add regularization to a model can be completed using TFLearn <a href="http://tflearn.org/helpers/regularizer">regularizer</a>. It currently supports weights and activation regularization. Available regularization losses can be found in <a href="http://tflearn.org/losses">here</a>. All regularization losses are stored into tf.GraphKeys.REGULARIZATION_LOSSES collection.</p>
+<pre><code>    ```python
+    # Add L2 regularization to a variable
+    W = tf.Variable(tf.random_normal([784, 256]), name="W")
+    tflearn.add_weight_regularizer(W, 'L2', weight_decay=0.001)
+    ```
+</code></pre>
+<h3>Preprocessing</h3>
+<p>Besides tensor operations, it might be useful to perform some preprocessing on input data. Thus, TFLearn has a set of preprocessing functions to make data manipulation more convenient (such as sequence padding, categorical labels, shuffling at unison, image processing, etc...).</p>
+<ul>
+<li>For more details, see: <a href="http://tflearn.org/data_utils">data_utils</a>.</li>
+</ul>
+<h1>Getting Further</h1>
+<p>There are a lot of examples along with numerous neural network
+implementations available for you to practice TFLearn more in depth:</p>
+<ul>
+<li>See: <a href="http://tflearn.org/examples">Examples</a>.</li>
+</ul>

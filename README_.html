@@ -1,0 +1,83 @@
+<p><a href="https://travis-ci.org/tflearn/tflearn"><img alt="Build Status" src="https://travis-ci.org/tflearn/tflearn.svg?branch=master" /></a>
+<a href="https://badge.fury.io/py/tflearn"><img alt="PyPI version" src="https://badge.fury.io/py/tflearn.svg" /></a>
+<a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
+<a href="https://gitter.im/tflearn/tflearn?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img alt="Join the chat at https://gitter.im/einsteinsci/betterbeginnings" src="https://badges.gitter.im/tflearn/tflearn.svg" /></a></p>
+<h1>TFLearn: Deep learning library featuring a higher-level API for TensorFlow.</h1>
+<p>TFlearn is a modular and transparent deep learning library built on top of Tensorflow.  It was designed to provide a higher-level API to TensorFlow in order to facilitate and speed-up experimentations, while remaining fully transparent and compatible with it.</p>
+<p>TFLearn features include:</p>
+<ul>
+<li>Easy-to-use and understand high-level API for implementing deep neural networks, with tutorial and examples.</li>
+<li>Fast prototyping through highly modular built-in neural network layers, regularizers, optimizers, metrics...</li>
+<li>Full transparency over Tensorflow. All functions are built over tensors and can be used independently of TFLearn.</li>
+<li>Powerful helper functions to train any TensorFlow graph, with support of multiple inputs, outputs and optimizers.</li>
+<li>Easy and beautiful graph visualization, with details about weights, gradients, activations and more...</li>
+<li>Effortless device placement for using multiple CPU/GPU.</li>
+</ul>
+<p>The high-level API currently supports most of recent deep learning models, such as Convolutions, LSTM, BiRNN, BatchNorm, PReLU, Residual networks, Generative networks... In the future, TFLearn is also intended to stay up-to-date with latest deep learning techniques.</p>
+<p>Note: Latest TFLearn (v0.3) is only compatible with TensorFlow v1.0 and over.</p>
+<h2>Overview</h2>
+<pre><code>    # Classification
+    tflearn.init_graph(num_cores=8, gpu_memory_fraction=0.5)
+
+    net = tflearn.input_data(shape=[None, 784])
+    net = tflearn.fully_connected(net, 64)
+    net = tflearn.dropout(net, 0.5)
+    net = tflearn.fully_connected(net, 10, activation='softmax')
+    net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
+
+    model = tflearn.DNN(net)
+    model.fit(X, Y)
+
+    # Sequence Generation
+    net = tflearn.input_data(shape=[None, 100, 5000])
+    net = tflearn.lstm(net, 64)
+    net = tflearn.dropout(net, 0.5)
+    net = tflearn.fully_connected(net, 5000, activation='softmax')
+    net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
+
+    model = tflearn.SequenceGenerator(net, dictionary=idx, seq_maxlen=100)
+    model.fit(X, Y)
+    model.generate(50, temperature=1.0)
+</code></pre>
+<p>There are many more examples available <em><a href="http://tflearn.org/examples">here</a></em>.</p>
+<h2>Installation</h2>
+<p><strong>TensorFlow Installation</strong></p>
+<p>TFLearn requires Tensorflow (version 1.0+) to be installed.</p>
+<p>To install TensorFlow, simply run
+        pip install tensorflow
+or, with GPU-support
+        pip install tensorflow-gpu</p>
+<p>For more details see <em><a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/get_started/os_setup.md">TensorFlow installation instructions</a></em></p>
+<p><strong>TFLearn Installation</strong></p>
+<p>To install TFLearn, the easiest way is to run</p>
+<p>For the bleeding edge version (recommended):</p>
+<pre><code>    pip install git+https://github.com/tflearn/tflearn.git
+</code></pre>
+<p>For the latest stable version:</p>
+<pre><code>    pip install tflearn
+</code></pre>
+<p>Otherwise, you can also install from source by running (from source folder):</p>
+<pre><code>    python setup.py install
+</code></pre>
+<ul>
+<li>For more details, please see the <em><a href="http://tflearn.org/installation">Installation Guide</a></em>.</li>
+</ul>
+<h2>Getting Started</h2>
+<p>See <em><a href="http://tflearn.org/getting_started">Getting Started with TFLearn</a></em> to learn about TFLearn basic functionalities or start browsing <em><a href="http://tflearn.org/tutorials">TFLearn Tutorials</a></em>.</p>
+<h2>Examples</h2>
+<p>There are many neural network implementation available, see <em><a href="http://tflearn.org/examples">Examples</a></em>.</p>
+<h2>Documentation</h2>
+<p><a href="http://tflearn.org/doc_index">http://tflearn.org/doc_index</a></p>
+<h2>Model Visualization</h2>
+<p><strong>Graph</strong></p>
+<p><img alt="Graph Visualization" src="docs/templates/img/graph.png" /></p>
+<p><strong>Loss &amp; Accuracy (multiple runs)</strong></p>
+<p><img alt="Loss Visualization" src="docs/templates/img/loss_acc.png" /></p>
+<p><strong>Layers</strong></p>
+<p><img alt="Layers Visualization" src="docs/templates/img/layer_visualization.png" /></p>
+<h2>Contributions</h2>
+<p>This is the first release of TFLearn, if you find any bug, please report it in the GitHub issues section.</p>
+<p>Improvements and requests for new features are more than welcome! Do not hesitate to twist and tweak TFLearn, and send pull-requests.</p>
+<p>For more info: <em><a href="http://tflearn.org/contributions">Contribute to TFLearn</a></em>.</p>
+<h2>License</h2>
+<p>MIT License</p>

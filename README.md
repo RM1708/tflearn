@@ -21,32 +21,28 @@ The high-level API currently supports most of recent deep learning models, such 
 Note: Latest TFLearn (v0.3) is only compatible with TensorFlow v1.0 and over.
 
 ## Overview
-```python
-# Classification
-tflearn.init_graph(num_cores=8, gpu_memory_fraction=0.5)
+        # Classification
+        tflearn.init_graph(num_cores=8, gpu_memory_fraction=0.5)
 
-net = tflearn.input_data(shape=[None, 784])
-net = tflearn.fully_connected(net, 64)
-net = tflearn.dropout(net, 0.5)
-net = tflearn.fully_connected(net, 10, activation='softmax')
-net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
+        net = tflearn.input_data(shape=[None, 784])
+        net = tflearn.fully_connected(net, 64)
+        net = tflearn.dropout(net, 0.5)
+        net = tflearn.fully_connected(net, 10, activation='softmax')
+        net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
 
-model = tflearn.DNN(net)
-model.fit(X, Y)
-```
+        model = tflearn.DNN(net)
+        model.fit(X, Y)
 
-```python
-# Sequence Generation
-net = tflearn.input_data(shape=[None, 100, 5000])
-net = tflearn.lstm(net, 64)
-net = tflearn.dropout(net, 0.5)
-net = tflearn.fully_connected(net, 5000, activation='softmax')
-net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
+        # Sequence Generation
+        net = tflearn.input_data(shape=[None, 100, 5000])
+        net = tflearn.lstm(net, 64)
+        net = tflearn.dropout(net, 0.5)
+        net = tflearn.fully_connected(net, 5000, activation='softmax')
+        net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
 
-model = tflearn.SequenceGenerator(net, dictionary=idx, seq_maxlen=100)
-model.fit(X, Y)
-model.generate(50, temperature=1.0)
-```
+        model = tflearn.SequenceGenerator(net, dictionary=idx, seq_maxlen=100)
+        model.fit(X, Y)
+        model.generate(50, temperature=1.0)
 
 There are many more examples available *[here](http://tflearn.org/examples)*.
 
@@ -56,14 +52,10 @@ There are many more examples available *[here](http://tflearn.org/examples)*.
 
 TFLearn requires Tensorflow (version 1.0+) to be installed.
 
-To install TensorFlow, simply run:
-```
-pip install tensorflow
-```
-or, with GPU-support:
-```
-pip install tensorflow-gpu
-```
+To install TensorFlow, simply run
+        pip install tensorflow
+or, with GPU-support
+        pip install tensorflow-gpu
 
 For more details see *[TensorFlow installation instructions](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/get_started/os_setup.md)*
 
@@ -72,17 +64,17 @@ For more details see *[TensorFlow installation instructions](https://github.com/
 To install TFLearn, the easiest way is to run
 
 For the bleeding edge version (recommended):
-```python
-pip install git+https://github.com/tflearn/tflearn.git
-```
+        
+        pip install git+https://github.com/tflearn/tflearn.git
+        
 For the latest stable version:
-```python
-pip install tflearn
-```
+        
+        pip install tflearn
+        
 Otherwise, you can also install from source by running (from source folder):
-```python
-python setup.py install
-```
+        
+        python setup.py install
+        
 
 - For more details, please see the *[Installation Guide](http://tflearn.org/installation)*.
 

@@ -1,0 +1,62 @@
+<h1>TFLearn: Deep learning library featuring a higher-level API for TensorFlow.</h1>
+<p>TFlearn is a modular and transparent deep learning library built on top of Tensorflow.  It was designed to provide a higher-level API to TensorFlow in order to facilitate and speed-up experimentations, while remaining fully transparent and compatible with it.</p>
+<p>TFLearn features include:</p>
+<ul>
+<li>Easy-to-use and understand high-level API for implementing deep neural networks, with tutorial and examples.</li>
+<li>Fast prototyping through highly modular built-in neural network layers, regularizers, optimizers, metrics...</li>
+<li>Full transparency over Tensorflow. All functions are built over tensors and can be used independently of TFLearn.</li>
+<li>Powerful helper functions to train any TensorFlow graph, with support of multiple inputs, outputs and optimizers.</li>
+<li>Easy and beautiful graph visualization, with details about weights, gradients, activations and more...</li>
+<li>Effortless device placement for using multiple CPU/GPU.</li>
+</ul>
+<p>The high-level API currently supports most of recent deep learning models, such as Convolutions, LSTM, BiRNN, BatchNorm, PReLU, Residual networks, Generative networks... In the future, TFLearn is also intended to stay up-to-date with latest deep learning techniques.</p>
+<p>Note: Latest TFLearn (v0.3) is only compatible with TensorFlow v1.0 and over.</p>
+<h1>Quick overview</h1>
+<p><strong>Code Example</strong></p>
+<pre><code>    ```python
+    # Classification
+    tflearn.init_graph(num_cores=8, gpu_memory_fraction=0.5)
+
+    net = tflearn.input_data(shape=[None, 784])
+    net = tflearn.fully_connected(net, 64)
+    net = tflearn.dropout(net, 0.5)
+    net = tflearn.fully_connected(net, 10, activation='softmax')
+    net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
+
+    model = tflearn.DNN(net)
+    model.fit(X, Y)
+
+    # Sequence Generation
+    net = tflearn.input_data(shape=[None, 100, 5000])
+    net = tflearn.lstm(net, 64)
+    net = tflearn.dropout(net, 0.5)
+    net = tflearn.fully_connected(net, 5000, activation='softmax')
+    net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
+
+    model = tflearn.SequenceGenerator(net, dictionary=idx, seq_maxlen=100)
+    model.fit(X, Y)
+    model.generate(50, temperature=1.0)
+    ```
+</code></pre>
+<p>There are many more examples available <a href="examples">here</a>.</p>
+<h1>Where to Start?</h1>
+<p>To install TFLearn, see: <a href="installation">Installation Guide</a>.</p>
+<p>If your version of Tensorflow is under 1.0: <a href="installation/#upgrade-tensorflow">Upgrade Tensorflow</a>.</p>
+<p>To get started: <a href="getting_started">Getting Started with TFLearn</a> and <a href="tutorials">TFLearn Tutorials</a>.</p>
+<p>For more examples: <a href="examples">Examples List</a>.</p>
+<p>To browse the API, check the <a href="doc_index#API">API Documentation</a>.</p>
+<h1>Model Visualization</h1>
+<p><strong>Graph</strong></p>
+<p><img alt="Graph Visualization" src="./img/graph.png" /></p>
+<p><strong>Loss &amp; Accuracy (multiple runs)</strong></p>
+<p><img alt="Loss Visualization" src="./img/loss_acc.png" /></p>
+<p><strong>Layers</strong></p>
+<p><img alt="Layers Visualization" src="./img/layer_visualization.png" /></p>
+<h1>Sources</h1>
+<p>GitHub: <a href="https://github.com/tflearn/tflearn">https://github.com/tflearn/tflearn</a>.</p>
+<h1>Contributions</h1>
+<p>This is the first release of TFLearn, if you find any bug, please report it in the GitHub issues section.</p>
+<p>Improvements and requests for new features are more than welcome! Do not hesitate to twist and tweak TF Learn, and send pull-requests.</p>
+<p>For more info: <em><a href="contributions">Contribute to TFLearn</a></em>.</p>
+<h1>License</h1>
+<p>MIT License</p>
